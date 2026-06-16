@@ -84,6 +84,18 @@ internal sealed class SparkJobLauncher(IKubernetes kube, InsightsOptions options
             ["sparkVersion"] = options.SparkVersion,
             ["arguments"] = spec.Arguments,
             ["restartPolicy"] = new Dictionary<string, object> { ["type"] = "Never" },
+
+            // S3A access to MinIO for the Scala job (reads/writes s3a://insights-* buckets).
+            // The job uses spark.sparkContext.hadoopConfiguration and sets none of these itself.
+            ["hadoopConf"] = new Dictionary<string, string>
+            {
+                ["fs.s3a.endpoint"] = options.Minio.Endpoint,
+                ["fs.s3a.access.key"] = options.Minio.AccessKey,
+                ["fs.s3a.secret.key"] = options.Minio.SecretKey,
+                ["fs.s3a.path.style.access"] = "true",
+                ["fs.s3a.connection.ssl.enabled"] = options.Minio.UseSsl ? "true" : "false",
+                ["fs.s3a.aws.credentials.provider"] = "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+            },
             ["driver"] = driver,
             ["executor"] = executor,
         };

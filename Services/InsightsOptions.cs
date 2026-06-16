@@ -82,4 +82,21 @@ internal sealed class InsightsOptions
     public int ExecutorCores { get; set; } = 4;
 
     public string ExecutorMemory { get; set; } = "6g";
+
+    // MinIO/S3A access for the Spark driver/executor. The Scala job reads s3a:// buckets
+    // via the Spark session's hadoopConfiguration, which the SparkApplication's hadoopConf
+    // populates from these. AccessKey/SecretKey are injected from the minio-root secret.
+    public MinioOptions Minio { get; set; } = new();
+
+    [ExcludeFromCodeCoverage]
+    internal sealed class MinioOptions
+    {
+        public string Endpoint { get; set; } = "minio:9000";
+
+        public string AccessKey { get; set; } = string.Empty;
+
+        public string SecretKey { get; set; } = string.Empty;
+
+        public bool UseSsl { get; set; }
+    }
 }
