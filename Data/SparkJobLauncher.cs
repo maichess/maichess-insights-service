@@ -88,6 +88,14 @@ internal sealed class SparkJobLauncher(IKubernetes kube, InsightsOptions options
             ["executor"] = executor,
         };
 
+        // The Spark image lives in the private GHCR org; the operator-created driver/executor
+        // pods run under the `spark` ServiceAccount (no pull secret), so the manifest must
+        // carry the registry pull secret or the driver pod ImagePullBackOffs (401).
+        if (!string.IsNullOrWhiteSpace(options.ImagePullSecret))
+        {
+            sparkSpec["imagePullSecrets"] = new List<string> { options.ImagePullSecret };
+        }
+
         return new Dictionary<string, object>
         {
             ["apiVersion"] = $"{Group}/{Version}",

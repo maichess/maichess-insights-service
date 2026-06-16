@@ -27,6 +27,10 @@ internal sealed class InsightsOptions
     // Operator-managed driver ServiceAccount (sparkOperator.spark.serviceAccount).
     public string ServiceAccount { get; set; } = "spark";
 
+    // Registry pull secret for the private GHCR Spark image, attached to the driver/executor
+    // pods. Empty disables it (e.g. a public image / locally-loaded image).
+    public string ImagePullSecret { get; set; } = "ghcr-pull-secret";
+
     // Mongo connection the Spark analysis connector writes through; the control plane
     // reads the same database via database-service gRPC, so MongoDb must be "maichess"
     // (the database every DatabaseService Mongo instance shares).
