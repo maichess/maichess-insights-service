@@ -6,4 +6,3 @@ internal enum JobType
     Ingestion,
     Analysis,
 }
-</content>

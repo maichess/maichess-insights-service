@@ -42,7 +42,7 @@ builder.Services.AddSingleton<IInsightsStore>(sp =>
 KubernetesClientConfiguration k8sConfig = KubernetesClientConfiguration.IsInCluster()
     ? KubernetesClientConfiguration.InClusterConfig()
     : KubernetesClientConfiguration.BuildConfigFromConfigFile();
-builder.Services.AddSingleton<IKubernetes>(new Kubernetes(k8sConfig));
+builder.Services.AddSingleton<IKubernetes>(_ => new Kubernetes(k8sConfig));
 builder.Services.AddSingleton<ISparkJobLauncher, SparkJobLauncher>();
 
 // MinIO staging for uploaded PGNs (insights-raw bucket).
@@ -50,12 +50,15 @@ string minioEndpoint = builder.Configuration["Insights:Minio:Endpoint"] ?? "mini
 string minioAccessKey = builder.Configuration["Insights:Minio:AccessKey"] ?? string.Empty;
 string minioSecretKey = builder.Configuration["Insights:Minio:SecretKey"] ?? string.Empty;
 bool minioSsl = builder.Configuration.GetValue("Insights:Minio:UseSsl", false);
-IMinioClient minio = new MinioClient()
-    .WithEndpoint(minioEndpoint)
-    .WithCredentials(minioAccessKey, minioSecretKey)
-    .WithSSL(minioSsl)
-    .Build();
-builder.Services.AddSingleton<IObjectStore>(new MinioObjectStore(minio, insightsOptions.RawBucket, clock, idGen));
+builder.Services.AddSingleton<IObjectStore>(_ => new MinioObjectStore(
+    new MinioClient()
+        .WithEndpoint(minioEndpoint)
+        .WithCredentials(minioAccessKey, minioSecretKey)
+        .WithSSL(minioSsl)
+        .Build(),
+    insightsOptions.RawBucket,
+    clock,
+    idGen));
 
 // Job-lifecycle events: pushed live when Kafka is enabled, else durably tracked only.
 if (builder.Configuration.GetValue("Kafka:Enabled", false))
@@ -149,4 +152,3 @@ app.MapGrpcService<InsightsGrpcService>();
 app.MapInsightsEndpoints();
 
 await app.RunAsync();
-</content>

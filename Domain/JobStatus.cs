@@ -8,4 +8,3 @@ internal enum JobStatus
     Succeeded,
     Failed,
 }
-</content>

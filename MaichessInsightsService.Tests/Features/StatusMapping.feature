@@ -17,4 +17,3 @@ Feature: Spark status mapping
       | pending | SUBMISSION_FAILED | failed    |
       | pending | SUBMITTED         | pending   |
       | running |                   | running   |
-</content>

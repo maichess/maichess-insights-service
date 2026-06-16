@@ -29,4 +29,3 @@ internal static class AnalysisKindNames
         }
     }
 }
-</content>

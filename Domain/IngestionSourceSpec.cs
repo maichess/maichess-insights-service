@@ -14,4 +14,3 @@ internal sealed record IngestionSourceSpec(
     internal static IngestionSourceSpec Upload(string objectKey, string label) =>
         new(SourceKind.Upload, string.Empty, objectKey, label);
 }
-</content>

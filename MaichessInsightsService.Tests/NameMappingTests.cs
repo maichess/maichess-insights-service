@@ -10,24 +10,24 @@ public class NameMappingTests
         Assert.Equal(5, AnalysisKindNames.All.Count);
 
     [Theory]
-    [InlineData(AnalysisKind.Openings, "openings")]
-    [InlineData(AnalysisKind.Endgames, "endgames")]
-    [InlineData(AnalysisKind.Positions, "positions")]
-    [InlineData(AnalysisKind.Tricky, "tricky")]
-    [InlineData(AnalysisKind.Summary, "summary")]
-    public void AnalysisKindToName(AnalysisKind kind, string expected) =>
-        Assert.Equal(expected, AnalysisKindNames.ToName(kind));
+    [InlineData((int)AnalysisKind.Openings, "openings")]
+    [InlineData((int)AnalysisKind.Endgames, "endgames")]
+    [InlineData((int)AnalysisKind.Positions, "positions")]
+    [InlineData((int)AnalysisKind.Tricky, "tricky")]
+    [InlineData((int)AnalysisKind.Summary, "summary")]
+    public void AnalysisKindToName(int kind, string expected) =>
+        Assert.Equal(expected, AnalysisKindNames.ToName((AnalysisKind)kind));
 
     [Theory]
-    [InlineData("openings", AnalysisKind.Openings)]
-    [InlineData("ENDGAMES", AnalysisKind.Endgames)]
-    [InlineData(" positions ", AnalysisKind.Positions)]
-    [InlineData("tricky", AnalysisKind.Tricky)]
-    [InlineData("summary", AnalysisKind.Summary)]
-    public void AnalysisKindTryParseKnown(string raw, AnalysisKind expected)
+    [InlineData("openings", (int)AnalysisKind.Openings)]
+    [InlineData("ENDGAMES", (int)AnalysisKind.Endgames)]
+    [InlineData(" positions ", (int)AnalysisKind.Positions)]
+    [InlineData("tricky", (int)AnalysisKind.Tricky)]
+    [InlineData("summary", (int)AnalysisKind.Summary)]
+    public void AnalysisKindTryParseKnown(string raw, int expected)
     {
         Assert.True(AnalysisKindNames.TryParse(raw, out AnalysisKind kind));
-        Assert.Equal(expected, kind);
+        Assert.Equal((AnalysisKind)expected, kind);
     }
 
     [Theory]
@@ -37,31 +37,31 @@ public class NameMappingTests
         Assert.False(AnalysisKindNames.TryParse(raw, out _));
 
     [Theory]
-    [InlineData(JobStatus.Pending, "pending")]
-    [InlineData(JobStatus.Running, "running")]
-    [InlineData(JobStatus.Succeeded, "succeeded")]
-    [InlineData(JobStatus.Failed, "failed")]
-    public void JobStatusToName(JobStatus status, string expected) =>
-        Assert.Equal(expected, JobStatusNames.ToName(status));
+    [InlineData((int)JobStatus.Pending, "pending")]
+    [InlineData((int)JobStatus.Running, "running")]
+    [InlineData((int)JobStatus.Succeeded, "succeeded")]
+    [InlineData((int)JobStatus.Failed, "failed")]
+    public void JobStatusToName(int status, string expected) =>
+        Assert.Equal(expected, JobStatusNames.ToName((JobStatus)status));
 
     [Theory]
-    [InlineData("running", JobStatus.Running)]
-    [InlineData("succeeded", JobStatus.Succeeded)]
-    [InlineData("failed", JobStatus.Failed)]
-    [InlineData("pending", JobStatus.Pending)]
-    [InlineData("anything-else", JobStatus.Pending)]
-    public void JobStatusFromName(string name, JobStatus expected) =>
-        Assert.Equal(expected, JobStatusNames.FromName(name));
+    [InlineData("running", (int)JobStatus.Running)]
+    [InlineData("succeeded", (int)JobStatus.Succeeded)]
+    [InlineData("failed", (int)JobStatus.Failed)]
+    [InlineData("pending", (int)JobStatus.Pending)]
+    [InlineData("anything-else", (int)JobStatus.Pending)]
+    public void JobStatusFromName(string name, int expected) =>
+        Assert.Equal((JobStatus)expected, JobStatusNames.FromName(name));
 
     [Theory]
-    [InlineData("pending", JobStatus.Pending)]
-    [InlineData("RUNNING", JobStatus.Running)]
-    [InlineData(" succeeded ", JobStatus.Succeeded)]
-    [InlineData("failed", JobStatus.Failed)]
-    public void JobStatusTryParseKnown(string raw, JobStatus expected)
+    [InlineData("pending", (int)JobStatus.Pending)]
+    [InlineData("RUNNING", (int)JobStatus.Running)]
+    [InlineData(" succeeded ", (int)JobStatus.Succeeded)]
+    [InlineData("failed", (int)JobStatus.Failed)]
+    public void JobStatusTryParseKnown(string raw, int expected)
     {
         Assert.True(JobStatusNames.TryParse(raw, out JobStatus status));
-        Assert.Equal(expected, status);
+        Assert.Equal((JobStatus)expected, status);
     }
 
     [Fact]
@@ -69,16 +69,15 @@ public class NameMappingTests
         Assert.False(JobStatusNames.TryParse("queued", out _));
 
     [Theory]
-    [InlineData(JobType.Ingestion, "ingestion")]
-    [InlineData(JobType.Analysis, "analysis")]
-    public void JobTypeToName(JobType type, string expected) =>
-        Assert.Equal(expected, JobTypeNames.ToName(type));
+    [InlineData((int)JobType.Ingestion, "ingestion")]
+    [InlineData((int)JobType.Analysis, "analysis")]
+    public void JobTypeToName(int type, string expected) =>
+        Assert.Equal(expected, JobTypeNames.ToName((JobType)type));
 
     [Theory]
-    [InlineData("analysis", JobType.Analysis)]
-    [InlineData("ingestion", JobType.Ingestion)]
-    [InlineData("other", JobType.Ingestion)]
-    public void JobTypeFromName(string name, JobType expected) =>
-        Assert.Equal(expected, JobTypeNames.FromName(name));
+    [InlineData("analysis", (int)JobType.Analysis)]
+    [InlineData("ingestion", (int)JobType.Ingestion)]
+    [InlineData("other", (int)JobType.Ingestion)]
+    public void JobTypeFromName(string name, int expected) =>
+        Assert.Equal((JobType)expected, JobTypeNames.FromName(name));
 }
-</content>

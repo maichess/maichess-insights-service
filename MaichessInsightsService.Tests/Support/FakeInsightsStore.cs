@@ -64,4 +64,3 @@ internal sealed class FakeInsightsStore : IInsightsStore
         return Task.FromResult(result);
     }
 }
-</content>

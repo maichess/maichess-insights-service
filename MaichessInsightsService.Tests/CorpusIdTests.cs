@@ -34,4 +34,3 @@ public class CorpusIdTests
     public void UploadIsPrefixedAndSlugged() =>
         Assert.Equal("upload-abc-123", CorpusId.ForUpload("ABC-123"));
 }
-</content>

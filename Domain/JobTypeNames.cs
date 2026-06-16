@@ -10,4 +10,3 @@ internal static class JobTypeNames
     internal static JobType FromName(string name) =>
         name == "analysis" ? JobType.Analysis : JobType.Ingestion;
 }
-</content>

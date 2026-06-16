@@ -16,4 +16,3 @@ internal interface IInsightsJobEventProducer
 
     Task JobFailedAsync(JobRecord job, CancellationToken ct);
 }
-</content>

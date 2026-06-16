@@ -32,4 +32,3 @@ internal sealed class FakeJobEventProducer : IInsightsJobEventProducer
         return Task.CompletedTask;
     }
 }
-</content>

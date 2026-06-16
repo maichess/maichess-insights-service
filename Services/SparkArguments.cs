@@ -86,4 +86,3 @@ internal static class SparkArguments
     private static string ToDate(long epochMs) =>
         DateTimeOffset.FromUnixTimeMilliseconds(epochMs).UtcDateTime.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 }
-</content>

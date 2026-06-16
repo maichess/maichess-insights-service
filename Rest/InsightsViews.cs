@@ -37,4 +37,3 @@ internal static class InsightsViews
     internal static FilterView ToView(CorpusFilterSpec filter) => new(
         filter.RatingBand, filter.TimeControl, filter.DateFromMs, filter.DateToMs, filter.SampleRate);
 }
-</content>

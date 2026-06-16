@@ -15,4 +15,3 @@ internal static class SparkApplicationName
         return name.Length <= MaxLength ? name : name[..MaxLength].TrimEnd('-');
     }
 }
-</content>

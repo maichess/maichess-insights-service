@@ -9,4 +9,3 @@ internal interface ISparkJobLauncher
 {
     Task LaunchAsync(SparkSpec spec, CancellationToken ct);
 }
-</content>

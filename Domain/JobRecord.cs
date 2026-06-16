@@ -34,4 +34,3 @@ internal sealed class JobRecord
 
     public string Error { get; set; } = string.Empty;
 }
-</content>

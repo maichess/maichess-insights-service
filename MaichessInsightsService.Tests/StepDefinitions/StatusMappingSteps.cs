@@ -21,4 +21,3 @@ internal sealed class StatusMappingSteps
     public void ThenTheMappedStatusIs(string status) =>
         Assert.Equal(JobStatusNames.FromName(status), mapped);
 }
-</content>

@@ -15,4 +15,3 @@ internal static class ProtobufEventSerdes
         where T : class, IMessage<T>, new()
         => new ProtobufSerializer<T>(registry);
 }
-</content>

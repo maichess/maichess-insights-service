@@ -12,4 +12,3 @@ internal abstract record SubmitResult
 
     internal sealed record NotFound(string Message) : SubmitResult;
 }
-</content>

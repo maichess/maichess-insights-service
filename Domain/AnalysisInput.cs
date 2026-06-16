@@ -4,4 +4,3 @@ namespace MaichessInsightsService.Domain;
 // names from the wire ("openings", "tricky", …); empty means all kinds. Parsing /
 // validation of the names happens in JobService so it stays unit-tested.
 internal sealed record AnalysisInput(string CorpusId, IReadOnlyList<string> Kinds);
-</content>

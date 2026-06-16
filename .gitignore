@@ -8,3 +8,6 @@ riderModule.iml
 Load-Env.ps1
 .env_prod
 MaichessInsightsService.Tests/coverage.json
+cov/
+*.cobertura.xml
+*.feature.cs

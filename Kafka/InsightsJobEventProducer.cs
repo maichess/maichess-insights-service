@@ -30,31 +30,47 @@ internal sealed class InsightsJobEventProducer : IInsightsJobEventProducer, IDis
     }
 
     public Task JobSubmittedAsync(JobRecord job, CancellationToken ct) =>
-        Emit(job, "insights.JobSubmitted", e => e.JobSubmitted = new JobSubmitted
-        {
-            JobId = job.Id,
-            Kind = job.Type == JobType.Ingestion ? JobKind.Ingestion : JobKind.Analysis,
-            CorpusId = job.CorpusId,
-            UserId = job.SubmittedBy,
-        }, ct);
+        Emit(
+            job,
+            "insights.JobSubmitted",
+            e => e.JobSubmitted = new JobSubmitted
+            {
+                JobId = job.Id,
+                Kind = job.Type == JobType.Ingestion ? JobKind.Ingestion : JobKind.Analysis,
+                CorpusId = job.CorpusId,
+                UserId = job.SubmittedBy,
+            },
+            ct);
 
     public Task JobRunningAsync(JobRecord job, CancellationToken ct) =>
-        Emit(job, "insights.JobRunning", e => e.JobRunning = new JobRunning
-        {
-            JobId = job.Id, CorpusId = job.CorpusId, UserId = job.SubmittedBy,
-        }, ct);
+        Emit(
+            job,
+            "insights.JobRunning",
+            e => e.JobRunning = new JobRunning
+            {
+                JobId = job.Id, CorpusId = job.CorpusId, UserId = job.SubmittedBy,
+            },
+            ct);
 
     public Task JobSucceededAsync(JobRecord job, CancellationToken ct) =>
-        Emit(job, "insights.JobSucceeded", e => e.JobSucceeded = new JobSucceeded
-        {
-            JobId = job.Id, CorpusId = job.CorpusId, UserId = job.SubmittedBy,
-        }, ct);
+        Emit(
+            job,
+            "insights.JobSucceeded",
+            e => e.JobSucceeded = new JobSucceeded
+            {
+                JobId = job.Id, CorpusId = job.CorpusId, UserId = job.SubmittedBy,
+            },
+            ct);
 
     public Task JobFailedAsync(JobRecord job, CancellationToken ct) =>
-        Emit(job, "insights.JobFailed", e => e.JobFailed = new JobFailed
-        {
-            JobId = job.Id, CorpusId = job.CorpusId, UserId = job.SubmittedBy, Message = job.Error,
-        }, ct);
+        Emit(
+            job,
+            "insights.JobFailed",
+            e => e.JobFailed = new JobFailed
+            {
+                JobId = job.Id, CorpusId = job.CorpusId, UserId = job.SubmittedBy, Message = job.Error,
+            },
+            ct);
 
     public void Dispose() => producer.Dispose();
 
@@ -73,4 +89,3 @@ internal sealed class InsightsJobEventProducer : IInsightsJobEventProducer, IDis
         await producer.ProduceAsync(Topic, new Message<string, InsightsJobEvent> { Key = job.Id, Value = envelope }, ct);
     }
 }
-</content>

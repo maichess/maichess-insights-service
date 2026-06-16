@@ -36,4 +36,3 @@ internal sealed class MinioObjectStore(IMinioClient client, string bucket, Func<
         return key;
     }
 }
-</content>

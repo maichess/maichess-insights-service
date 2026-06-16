@@ -214,4 +214,3 @@ internal sealed class InsightsStore(Database.DatabaseClient client) : IInsightsS
     private static double Num(Struct s, string field) =>
         s.Fields.TryGetValue(field, out Value? v) && v.KindCase == Value.KindOneofCase.NumberValue ? v.NumberValue : 0;
 }
-</content>

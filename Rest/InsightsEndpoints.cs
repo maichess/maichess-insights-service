@@ -83,8 +83,11 @@ internal static class InsightsEndpoints
     }
 
     private static async Task<IResult> ListJobs(
-        [FromQuery] string? status, JobService jobs, CancellationToken ct,
-        [FromQuery] int limit = 0, [FromQuery] int offset = 0)
+        [FromQuery] string? status,
+        JobService jobs,
+        CancellationToken ct,
+        [FromQuery] int limit = 0,
+        [FromQuery] int offset = 0)
     {
         JobStatus? filter = !string.IsNullOrEmpty(status) && JobStatusNames.TryParse(status, out JobStatus parsed)
             ? parsed
@@ -128,4 +131,3 @@ internal static class InsightsEndpoints
         return value is not null;
     }
 }
-</content>

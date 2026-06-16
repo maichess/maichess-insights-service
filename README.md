@@ -39,4 +39,3 @@ cd MaichessInsightsService.Tests && dotnet stryker
 `GET /insights/jobs`, `GET /insights/jobs/{id}`, `GET /insights/corpora`. The metric query
 endpoints (`/corpora/{id}/openings` etc.) arrive in task 06. See
 `maichess-api-contracts/rest/insights.md`.
-</content>

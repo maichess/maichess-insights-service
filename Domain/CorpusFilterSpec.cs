@@ -11,4 +11,3 @@ internal sealed record CorpusFilterSpec(
 {
     internal static CorpusFilterSpec Empty { get; } = new(string.Empty, string.Empty, 0, 0, 0);
 }
-</content>

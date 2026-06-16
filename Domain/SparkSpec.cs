@@ -7,4 +7,3 @@ internal sealed record SparkSpec(
     JobType Type,
     string MainClass,
     IReadOnlyList<string> Arguments);
-</content>

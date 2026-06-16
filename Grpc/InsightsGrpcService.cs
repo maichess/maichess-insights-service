@@ -3,6 +3,9 @@ using Grpc.Core;
 using Maichess.Insights.V1;
 using MaichessInsightsService.Domain;
 using MaichessInsightsService.Services;
+using AnalysisKind = MaichessInsightsService.Domain.AnalysisKind;
+using JobStatus = MaichessInsightsService.Domain.JobStatus;
+using JobType = MaichessInsightsService.Domain.JobType;
 using Proto = Maichess.Insights.V1;
 
 namespace MaichessInsightsService.Grpc;
@@ -17,14 +20,13 @@ internal sealed class InsightsGrpcService(JobService jobs) : Insights.InsightsBa
     public override async Task<SubmitIngestionResponse> SubmitIngestion(
         SubmitIngestionRequest request, ServerCallContext context)
     {
-        IngestionInput input = new(
-            request.Source?.SourceCase == IngestionSource.SourceOneofCase.LichessMonth
-                ? new LichessMonthInput(request.Source.LichessMonth.YearMonth)
-                : null,
-            request.Source?.SourceCase == IngestionSource.SourceOneofCase.Upload
-                ? new UploadInput(request.Source.Upload.ObjectKey, request.Source.Upload.Label)
-                : null,
-            ToFilter(request.Filter));
+        LichessMonthInput? lichess = request.Source?.SourceCase == IngestionSource.SourceOneofCase.LichessMonth
+            ? new LichessMonthInput(request.Source.LichessMonth.YearMonth)
+            : null;
+        UploadInput? upload = request.Source?.SourceCase == IngestionSource.SourceOneofCase.Upload
+            ? new UploadInput(request.Source.Upload.ObjectKey, request.Source.Upload.Label)
+            : null;
+        IngestionInput input = new(lichess, upload, ToFilter(request.Filter));
 
         SubmitResult result = await jobs.SubmitIngestionAsync(input, UserId(context), context.CancellationToken);
         return new SubmitIngestionResponse { Job = Unwrap(result) };
@@ -171,4 +173,3 @@ internal sealed class InsightsGrpcService(JobService jobs) : Insights.InsightsBa
         return entry?.Value ?? string.Empty;
     }
 }
-</content>

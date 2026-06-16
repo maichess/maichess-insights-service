@@ -9,4 +9,3 @@ internal enum AnalysisKind
     Tricky,
     Summary,
 }
-</content>

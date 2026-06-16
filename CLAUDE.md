@@ -94,4 +94,3 @@ explaining a non-obvious constraint.
 Stryker.NET is wired as a local dotnet tool (`.config/dotnet-tools.json`); config in
 `MaichessInsightsService.Tests/stryker-config.json` mirrors the coverage exclusions. Run
 `dotnet tool restore` then `dotnet stryker` from the test project directory.
-</content>

@@ -17,4 +17,3 @@ public class SlugTests
     public void MakeProducesRfc1123Slug(string input, string expected) =>
         Assert.Equal(expected, Slug.Make(input));
 }
-</content>

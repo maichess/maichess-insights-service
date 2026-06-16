@@ -6,8 +6,3 @@ internal sealed record IngestionInput(
     LichessMonthInput? Lichess,
     UploadInput? Upload,
     CorpusFilterSpec Filter);
-
-internal sealed record LichessMonthInput(string YearMonth);
-
-internal sealed record UploadInput(string ObjectKey, string Label);
-</content>

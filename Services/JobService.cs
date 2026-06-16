@@ -17,9 +17,6 @@ internal sealed partial class JobService(
     private const int DefaultLimit = 20;
     private const int MaxLimit = 100;
 
-    [GeneratedRegex(@"^\d{4}-(0[1-9]|1[0-2])$")]
-    private static partial Regex YearMonthPattern();
-
     internal async Task<SubmitResult> SubmitIngestionAsync(
         IngestionInput input, string submittedBy, CancellationToken ct)
     {
@@ -134,7 +131,7 @@ internal sealed partial class JobService(
 
     internal Task<CorpusRecord?> GetCorpusAsync(string id, CancellationToken ct) => store.GetCorpusAsync(id, ct);
 
-    private string? ValidateIngestion(IngestionInput input)
+    private static string? ValidateIngestion(IngestionInput input)
     {
         int sources = (input.Lichess is null ? 0 : 1) + (input.Upload is null ? 0 : 1);
         if (sources != 1)
@@ -193,5 +190,7 @@ internal sealed partial class JobService(
     }
 
     private static int Clamp(int limit) => limit <= 0 ? DefaultLimit : Math.Min(limit, MaxLimit);
+
+    [GeneratedRegex(@"^\d{4}-(0[1-9]|1[0-2])$")]
+    private static partial Regex YearMonthPattern();
 }
-</content>

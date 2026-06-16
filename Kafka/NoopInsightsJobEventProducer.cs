@@ -17,4 +17,3 @@ internal sealed class NoopInsightsJobEventProducer : IInsightsJobEventProducer
 
     public Task JobFailedAsync(JobRecord job, CancellationToken ct) => Task.CompletedTask;
 }
-</content>

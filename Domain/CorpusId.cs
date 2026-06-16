@@ -31,4 +31,3 @@ internal static class CorpusId
 
     internal static string ForUpload(string id) => "upload-" + Slug.Make(id);
 }
-</content>

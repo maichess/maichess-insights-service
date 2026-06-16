@@ -31,4 +31,3 @@ internal static class Slug
         return sb.ToString();
     }
 }
-</content>

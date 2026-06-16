@@ -27,4 +27,3 @@ Feature: Job dispatch
     When an analysis is submitted for corpus "missing" with kinds ""
     Then the submit is not found
     And no SparkApplication was launched
-</content>

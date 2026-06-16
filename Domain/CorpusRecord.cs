@@ -15,4 +15,3 @@ internal sealed class CorpusRecord
 
     public long CreatedAtMs { get; set; }
 }
-</content>

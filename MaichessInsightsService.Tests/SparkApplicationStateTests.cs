@@ -6,15 +6,15 @@ namespace MaichessInsightsService.Tests;
 public class SparkApplicationStateTests
 {
     [Theory]
-    [InlineData("RUNNING", JobStatus.Running)]
-    [InlineData("running", JobStatus.Running)]
-    [InlineData("SUCCEEDING", JobStatus.Running)]
-    [InlineData("COMPLETED", JobStatus.Succeeded)]
-    [InlineData("FAILED", JobStatus.Failed)]
-    [InlineData("FAILING", JobStatus.Failed)]
-    [InlineData("SUBMISSION_FAILED", JobStatus.Failed)]
-    public void RecognizedStatesMap(string state, JobStatus expected) =>
-        Assert.Equal(expected, SparkApplicationState.ToJobStatus(state, JobStatus.Pending));
+    [InlineData("RUNNING", (int)JobStatus.Running)]
+    [InlineData("running", (int)JobStatus.Running)]
+    [InlineData("SUCCEEDING", (int)JobStatus.Running)]
+    [InlineData("COMPLETED", (int)JobStatus.Succeeded)]
+    [InlineData("FAILED", (int)JobStatus.Failed)]
+    [InlineData("FAILING", (int)JobStatus.Failed)]
+    [InlineData("SUBMISSION_FAILED", (int)JobStatus.Failed)]
+    public void RecognizedStatesMap(string state, int expected) =>
+        Assert.Equal((JobStatus)expected, SparkApplicationState.ToJobStatus(state, JobStatus.Pending));
 
     [Theory]
     [InlineData("")]
@@ -25,4 +25,3 @@ public class SparkApplicationStateTests
     public void UnrecognizedOrNonTerminalKeepsCurrent(string? state) =>
         Assert.Equal(JobStatus.Pending, SparkApplicationState.ToJobStatus(state, JobStatus.Pending));
 }
-</content>

@@ -25,7 +25,10 @@ internal sealed class SparkJobLauncher(IKubernetes kube, InsightsOptions options
         {
             await kube.CustomObjects.CreateNamespacedCustomObjectAsync(
                 body, Group, Version, options.Namespace, Plural, cancellationToken: ct);
-            logger.LogInformation("Created SparkApplication {Name} ({Class})", spec.ApplicationName, spec.MainClass);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation("Created SparkApplication {Name} ({Class})", spec.ApplicationName, spec.MainClass);
+            }
         }
         catch (HttpOperationException ex)
         {
@@ -34,7 +37,7 @@ internal sealed class SparkJobLauncher(IKubernetes kube, InsightsOptions options
         }
     }
 
-    private object BuildManifest(SparkSpec spec)
+    private Dictionary<string, object> BuildManifest(SparkSpec spec)
     {
         Dictionary<string, object> driver = new()
         {
@@ -97,4 +100,3 @@ internal sealed class SparkJobLauncher(IKubernetes kube, InsightsOptions options
         };
     }
 }
-</content>

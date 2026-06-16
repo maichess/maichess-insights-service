@@ -22,4 +22,3 @@ public class SparkApplicationNameTests
         Assert.DoesNotContain('-', name[16..]);
     }
 }
-</content>

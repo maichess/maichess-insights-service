@@ -25,6 +25,7 @@ internal sealed class SparkStatusReconciler(
         using PeriodicTimer timer = new(Interval);
         do
         {
+#pragma warning disable CA1031 // Resilient reconcile loop: log and continue on any per-tick failure.
             try
             {
                 await ReconcileAsync(stoppingToken);
@@ -37,6 +38,7 @@ internal sealed class SparkStatusReconciler(
             {
                 logger.LogError(ex, "Spark status reconcile failed");
             }
+#pragma warning restore CA1031
         }
         while (await timer.WaitForNextTickAsync(stoppingToken));
     }
@@ -61,7 +63,7 @@ internal sealed class SparkStatusReconciler(
         }
 
         JsonElement? state = await ReadStateAsync(job.SparkApplication, ct);
-        JobStatus mapped = SparkApplicationState.ToJobStatus(state?.GetProperty("state").GetString(), job.Status);
+        var mapped = SparkApplicationState.ToJobStatus(state?.GetProperty("state").GetString(), job.Status);
         if (mapped == job.Status)
         {
             return;
@@ -102,4 +104,3 @@ internal sealed class SparkStatusReconciler(
             : null;
     }
 }
-</content>

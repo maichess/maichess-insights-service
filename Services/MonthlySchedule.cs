@@ -24,4 +24,3 @@ internal static class MonthlySchedule
                 0,
                 options.DefaultSampleRate));
 }
-</content>

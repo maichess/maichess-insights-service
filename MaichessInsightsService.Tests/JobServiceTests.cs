@@ -148,13 +148,13 @@ public class JobServiceTests
         JobRecord job = Assert.IsType<SubmitResult.Success>(result).Job;
         Assert.Equal(JobType.Analysis, job.Type);
         Assert.Equal(AnalysisKindNames.All, job.AnalysisKinds);
-        Assert.Equal("insights-analysis-job-2", job.SparkApplication);
+        Assert.Equal("insights-analysis-job-1", job.SparkApplication);
         Assert.Equal("user-2", job.SubmittedBy);
         Assert.Equal(SourceKind.Lichess, job.Source!.Kind);
         Assert.Equal("all", Value(launcher.Last.Arguments, "--jobs"));
-        Assert.Equal("job-2", Value(launcher.Last.Arguments, "--job-id"));
-        Assert.Equal("insights-analysis-job-2", Value(launcher.Last.Arguments, "--spark-application"));
-        Assert.Equal(("submitted", "job-2"), events.Events[^1]);
+        Assert.Equal("job-1", Value(launcher.Last.Arguments, "--job-id"));
+        Assert.Equal("insights-analysis-job-1", Value(launcher.Last.Arguments, "--spark-application"));
+        Assert.Equal(("submitted", "job-1"), events.Events[^1]);
     }
 
     [Fact]
@@ -281,4 +281,3 @@ public class JobServiceTests
         return null;
     }
 }
-</content>

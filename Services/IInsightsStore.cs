@@ -28,4 +28,3 @@ internal interface IInsightsStore
     // Returns corpora, newest first.
     Task<IReadOnlyList<CorpusRecord>> ListCorporaAsync(int limit, int offset, CancellationToken ct);
 }
-</content>

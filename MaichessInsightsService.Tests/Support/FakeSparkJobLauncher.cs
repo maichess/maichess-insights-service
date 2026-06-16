@@ -17,4 +17,3 @@ internal sealed class FakeSparkJobLauncher : ISparkJobLauncher
         return Task.CompletedTask;
     }
 }
-</content>

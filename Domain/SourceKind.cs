@@ -7,4 +7,3 @@ internal enum SourceKind
     Lichess,
     Upload,
 }
-</content>

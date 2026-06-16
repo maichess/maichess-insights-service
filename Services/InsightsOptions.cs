@@ -50,6 +50,15 @@ internal sealed class InsightsOptions
 
     public int MinSupport { get; set; } = 30;
 
+    // Default filter/sample applied to the monthly Lichess pull (annotations-first:
+    // sampled ~10-15%, unfiltered band/time-control unless configured). Full-month,
+    // unsampled runs are explicit opt-in via an ingestion request.
+    public string DefaultRatingBand { get; set; } = string.Empty;
+
+    public string DefaultTimeControl { get; set; } = string.Empty;
+
+    public double DefaultSampleRate { get; set; } = 0.1;
+
     // Spark blast-radius controls (knowledge/operations/spark-and-minio.md).
     public string PriorityClassName { get; set; } = "insights-low-priority";
 
@@ -66,4 +75,3 @@ internal sealed class InsightsOptions
 
     public string ExecutorMemory { get; set; } = "6g";
 }
-</content>

@@ -86,4 +86,3 @@ internal sealed class JobDispatchSteps(JobDispatchContext context)
         Assert.Contains(("submitted", job.Id), context.Events.Events);
     }
 }
-</content>

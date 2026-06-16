@@ -8,4 +8,3 @@ internal interface IObjectStore
     // key (to pass as the `upload` source of an ingestion).
     Task<string> StorePgnAsync(Stream content, string fileName, CancellationToken ct);
 }
-</content>
