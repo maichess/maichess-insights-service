@@ -15,6 +15,7 @@ internal sealed class SparkStatusReconciler(
     IKubernetes kube,
     IInsightsStore store,
     IInsightsJobEventProducer events,
+    InsightsOptions options,
     Func<long> clock,
     ILogger<SparkStatusReconciler> logger) : BackgroundService
 {
@@ -96,7 +97,7 @@ internal sealed class SparkStatusReconciler(
     private async Task<JsonElement?> ReadStateAsync(string name, CancellationToken ct)
     {
         object raw = await kube.CustomObjects.GetNamespacedCustomObjectStatusAsync(
-            SparkJobLauncher.Group, SparkJobLauncher.Version, "maichess", SparkJobLauncher.Plural, name, cancellationToken: ct);
+            SparkJobLauncher.Group, SparkJobLauncher.Version, options.Namespace, SparkJobLauncher.Plural, name, cancellationToken: ct);
         JsonElement root = JsonSerializer.SerializeToElement(raw);
         return root.TryGetProperty("status", out JsonElement statusEl)
             && statusEl.TryGetProperty("applicationState", out JsonElement appState)

@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Confluent.Kafka;
-using Confluent.SchemaRegistry;
 using Maichess.Events.V1;
 using MaichessInsightsService.Domain;
 using MaichessInsightsService.Services;
@@ -19,13 +18,13 @@ internal sealed class InsightsJobEventProducer : IInsightsJobEventProducer, IDis
     private readonly Func<long> clock;
     private readonly Func<string> idGen;
 
-    public InsightsJobEventProducer(string bootstrapServers, ISchemaRegistryClient registry, Func<long> clock, Func<string> idGen)
+    public InsightsJobEventProducer(string bootstrapServers, Func<long> clock, Func<string> idGen)
     {
         this.clock = clock;
         this.idGen = idGen;
         ProducerConfig config = new() { BootstrapServers = bootstrapServers, EnableIdempotence = true };
         producer = new ProducerBuilder<string, InsightsJobEvent>(config)
-            .SetValueSerializer(ProtobufEventSerdes.Serializer<InsightsJobEvent>(registry))
+            .SetValueSerializer(ProtobufEventSerdes.Serializer<InsightsJobEvent>())
             .Build();
     }
 

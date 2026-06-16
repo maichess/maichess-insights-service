@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Confluent.SchemaRegistry;
 using Grpc.Net.Client;
 using k8s;
 using Maichess.Database.V1;
@@ -67,11 +66,8 @@ builder.Services.AddSingleton<IObjectStore>(_ => new MinioObjectStore(
 if (builder.Configuration.GetValue("Kafka:Enabled", false))
 {
     string bootstrap = Environment.GetEnvironmentVariable("KAFKA_BOOTSTRAP") ?? "kafka:9092";
-    string registryUrl = Environment.GetEnvironmentVariable("SCHEMA_REGISTRY_URL") ?? "http://schema-registry:8081";
-    builder.Services.AddSingleton<ISchemaRegistryClient>(
-        _ => new CachedSchemaRegistryClient(new SchemaRegistryConfig { Url = registryUrl }));
-    builder.Services.AddSingleton<IInsightsJobEventProducer>(sp =>
-        new InsightsJobEventProducer(bootstrap, sp.GetRequiredService<ISchemaRegistryClient>(), clock, idGen));
+    builder.Services.AddSingleton<IInsightsJobEventProducer>(
+        _ => new InsightsJobEventProducer(bootstrap, clock, idGen));
 }
 else
 {
@@ -101,6 +97,7 @@ builder.Services.AddHostedService(sp => new SparkStatusReconciler(
     sp.GetRequiredService<IKubernetes>(),
     sp.GetRequiredService<IInsightsStore>(),
     sp.GetRequiredService<IInsightsJobEventProducer>(),
+    sp.GetRequiredService<InsightsOptions>(),
     clock,
     sp.GetRequiredService<ILogger<SparkStatusReconciler>>()));
 
