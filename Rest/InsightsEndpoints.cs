@@ -20,6 +20,11 @@ internal static class InsightsEndpoints
         group.MapGet("/jobs", ListJobs);
         group.MapGet("/jobs/{id}", GetJob);
         group.MapGet("/corpora", ListCorpora);
+        group.MapGet("/corpora/{id}/summary", GetCorpusSummary);
+        group.MapGet("/corpora/{id}/openings", GetTopOpenings);
+        group.MapGet("/corpora/{id}/endgames", GetCommonEndgames);
+        group.MapGet("/corpora/{id}/positions", GetCommonPositions);
+        group.MapGet("/corpora/{id}/tricky", GetTrickyPositions);
         return routes;
     }
 
@@ -107,6 +112,65 @@ internal static class InsightsEndpoints
     {
         IReadOnlyList<CorpusRecord> result = await jobs.ListCorporaAsync(limit, offset, ct);
         return Results.Ok(new CorpusListResponse([.. result.Select(InsightsViews.ToView)]));
+    }
+
+    private static async Task<IResult> GetCorpusSummary(string id, InsightsQueryService queries, CancellationToken ct)
+    {
+        CorpusSummaryMetric? summary = await queries.GetCorpusSummaryAsync(id, ct);
+        return summary is null ? Results.NotFound() : Results.Ok(new SummaryResponse(summary));
+    }
+
+    private static async Task<IResult> GetTopOpenings(
+        string id,
+        InsightsQueryService queries,
+        CancellationToken ct,
+        [FromQuery] string? color = null,
+        [FromQuery(Name = "rating_band")] string? ratingBand = null,
+        [FromQuery(Name = "time_control")] string? timeControl = null,
+        [FromQuery] int limit = 0,
+        [FromQuery] int offset = 0)
+    {
+        OpeningsQuery query = new(
+            id, color ?? string.Empty, ratingBand ?? string.Empty, timeControl ?? string.Empty, limit, offset);
+        IReadOnlyList<OpeningMetric>? rows = await queries.GetTopOpeningsAsync(query, ct);
+        return rows is null ? Results.NotFound() : Results.Ok(new OpeningsResponse(rows));
+    }
+
+    private static async Task<IResult> GetCommonEndgames(
+        string id,
+        InsightsQueryService queries,
+        CancellationToken ct,
+        [FromQuery] int limit = 0,
+        [FromQuery] int offset = 0)
+    {
+        IReadOnlyList<EndgameMetric>? rows = await queries.GetCommonEndgamesAsync(
+            new PagedQuery(id, limit, offset), ct);
+        return rows is null ? Results.NotFound() : Results.Ok(new EndgamesResponse(rows));
+    }
+
+    private static async Task<IResult> GetCommonPositions(
+        string id,
+        InsightsQueryService queries,
+        CancellationToken ct,
+        [FromQuery(Name = "exclude_book")] bool excludeBook = false,
+        [FromQuery] int limit = 0,
+        [FromQuery] int offset = 0)
+    {
+        IReadOnlyList<PositionMetric>? rows = await queries.GetCommonPositionsAsync(
+            new PositionsQuery(id, excludeBook, limit, offset), ct);
+        return rows is null ? Results.NotFound() : Results.Ok(new PositionsResponse(rows));
+    }
+
+    private static async Task<IResult> GetTrickyPositions(
+        string id,
+        InsightsQueryService queries,
+        CancellationToken ct,
+        [FromQuery] int limit = 0,
+        [FromQuery] int offset = 0)
+    {
+        IReadOnlyList<TrickyMetric>? rows = await queries.GetTrickyPositionsAsync(
+            new PagedQuery(id, limit, offset), ct);
+        return rows is null ? Results.NotFound() : Results.Ok(new TrickyResponse(rows));
     }
 
     private static IResult Accepted(SubmitResult result) =>

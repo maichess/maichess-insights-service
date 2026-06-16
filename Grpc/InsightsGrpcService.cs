@@ -15,7 +15,7 @@ namespace MaichessInsightsService.Grpc;
 // as the base Unimplemented until then. Excluded from coverage: thin adapter over the
 // tested JobService; mapping mirrors the proto/REST contract.
 [ExcludeFromCodeCoverage]
-internal sealed class InsightsGrpcService(JobService jobs) : Insights.InsightsBase
+internal sealed class InsightsGrpcService(JobService jobs, InsightsQueryService queries) : Insights.InsightsBase
 {
     public override async Task<SubmitIngestionResponse> SubmitIngestion(
         SubmitIngestionRequest request, ServerCallContext context)
@@ -64,6 +64,61 @@ internal sealed class InsightsGrpcService(JobService jobs) : Insights.InsightsBa
             request.Limit, request.Offset, context.CancellationToken);
         ListCorporaResponse response = new();
         response.Corpora.AddRange(result.Select(ToProto));
+        return response;
+    }
+
+    public override async Task<GetCorpusSummaryResponse> GetCorpusSummary(
+        GetCorpusSummaryRequest request, ServerCallContext context)
+    {
+        CorpusSummaryMetric? summary = await queries.GetCorpusSummaryAsync(request.CorpusId, context.CancellationToken);
+        return summary is null
+            ? throw NotFound(request.CorpusId)
+            : new GetCorpusSummaryResponse { Summary = ToProto(summary) };
+    }
+
+    public override async Task<GetTopOpeningsResponse> GetTopOpenings(
+        GetTopOpeningsRequest request, ServerCallContext context)
+    {
+        OpeningsQuery query = new(
+            request.CorpusId, request.Color, request.RatingBand, request.TimeControl, request.Limit, request.Offset);
+        IReadOnlyList<OpeningMetric>? rows = await queries.GetTopOpeningsAsync(query, context.CancellationToken)
+            ?? throw NotFound(request.CorpusId);
+        GetTopOpeningsResponse response = new();
+        response.Openings.AddRange(rows.Select(ToProto));
+        return response;
+    }
+
+    public override async Task<GetCommonEndgamesResponse> GetCommonEndgames(
+        GetCommonEndgamesRequest request, ServerCallContext context)
+    {
+        IReadOnlyList<EndgameMetric>? rows = await queries.GetCommonEndgamesAsync(
+            new PagedQuery(request.CorpusId, request.Limit, request.Offset), context.CancellationToken)
+            ?? throw NotFound(request.CorpusId);
+        GetCommonEndgamesResponse response = new();
+        response.Endgames.AddRange(rows.Select(ToProto));
+        return response;
+    }
+
+    public override async Task<GetCommonPositionsResponse> GetCommonPositions(
+        GetCommonPositionsRequest request, ServerCallContext context)
+    {
+        IReadOnlyList<PositionMetric>? rows = await queries.GetCommonPositionsAsync(
+            new PositionsQuery(request.CorpusId, request.ExcludeBook, request.Limit, request.Offset),
+            context.CancellationToken)
+            ?? throw NotFound(request.CorpusId);
+        GetCommonPositionsResponse response = new();
+        response.Positions.AddRange(rows.Select(ToProto));
+        return response;
+    }
+
+    public override async Task<GetTrickyPositionsResponse> GetTrickyPositions(
+        GetTrickyPositionsRequest request, ServerCallContext context)
+    {
+        IReadOnlyList<TrickyMetric>? rows = await queries.GetTrickyPositionsAsync(
+            new PagedQuery(request.CorpusId, request.Limit, request.Offset), context.CancellationToken)
+            ?? throw NotFound(request.CorpusId);
+        GetTrickyPositionsResponse response = new();
+        response.Positions.AddRange(rows.Select(ToProto));
         return response;
     }
 
@@ -166,6 +221,72 @@ internal sealed class InsightsGrpcService(JobService jobs) : Insights.InsightsBa
             Proto.AnalysisKind.Summary => "summary",
             _ => string.Empty,
         };
+
+    private static RpcException NotFound(string corpusId) =>
+        new(new Status(StatusCode.NotFound, $"corpus {corpusId} not found"));
+
+    private static Proto.OpeningRow ToProto(OpeningMetric m) => new()
+    {
+        Eco = m.Eco,
+        OpeningName = m.OpeningName,
+        GameCount = m.GameCount,
+        WhiteWinRate = m.WhiteWinRate,
+        BlackWinRate = m.BlackWinRate,
+        DrawRate = m.DrawRate,
+        Color = m.Color,
+        RatingBand = m.RatingBand,
+        TimeControl = m.TimeControl,
+        Trend = { m.Trend.Select(ToProto) },
+    };
+
+    private static Proto.OpeningTrendPoint ToProto(OpeningTrendMetric m) => new()
+    {
+        YearMonth = m.YearMonth,
+        GameCount = m.GameCount,
+        WhiteWinRate = m.WhiteWinRate,
+        BlackWinRate = m.BlackWinRate,
+        DrawRate = m.DrawRate,
+    };
+
+    private static Proto.EndgameRow ToProto(EndgameMetric m) => new()
+    {
+        MaterialSignature = m.MaterialSignature,
+        Frequency = m.Frequency,
+        StrongerSideWinRate = m.StrongerSideWinRate,
+        DrawRate = m.DrawRate,
+        StrongerSideLossRate = m.StrongerSideLossRate,
+    };
+
+    private static Proto.PositionRow ToProto(PositionMetric m) => new()
+    {
+        NormalizedFen = m.NormalizedFen,
+        ReachCount = m.ReachCount,
+        WhiteWinRate = m.WhiteWinRate,
+        BlackWinRate = m.BlackWinRate,
+        DrawRate = m.DrawRate,
+    };
+
+    private static Proto.TrickyRow ToProto(TrickyMetric m) => new()
+    {
+        NormalizedFen = m.NormalizedFen,
+        Support = m.Support,
+        AvgCentipawnLoss = m.AvgCentipawnLoss,
+        BlunderProbability = m.BlunderProbability,
+        AvgThinkTimeMs = m.AvgThinkTimeMs,
+    };
+
+    private static Proto.CorpusSummary ToProto(CorpusSummaryMetric m) => new()
+    {
+        CorpusId = m.CorpusId,
+        TotalGames = m.TotalGames,
+        DateFrom = m.DateFrom,
+        DateTo = m.DateTo,
+        DrawRate = m.DrawRate,
+        AvgPlyCount = m.AvgPlyCount,
+        RatingDistribution = { m.RatingDistribution.Select(c => new RatingBandCount { RatingBand = c.Key, GameCount = c.GameCount }) },
+        TerminationMix = { m.TerminationMix.Select(c => new TerminationCount { Termination = c.Key, GameCount = c.GameCount }) },
+        FirstMoves = { m.FirstMoves.Select(c => new FirstMoveCount { San = c.Key, GameCount = c.GameCount }) },
+    };
 
     private static string UserId(ServerCallContext context)
     {

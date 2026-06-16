@@ -80,3 +80,30 @@ keys (or drop its `insights_jobs` append entirely, since the reconciler already 
 terminal status). Until then the control plane's ListJobs/GetJob read only its own records
 correctly; the Spark-appended camelCase docs are inert extra rows. Recorded here per the
 Contract Policy.
+
+## Task 06 — query API built, compiled, and green
+
+The read API (`Services/InsightsQueryService`, `Services/IInsightsRepository` +
+`Data/InsightsRepository`, `Services/IInsightsCache` + `Data/RedisInsightsCache`, the 5
+query RPCs in `Grpc/InsightsGrpcService`, and the corpus-scoped REST routes) implements
+task 01's query half. **124 tests pass, 100% line/branch/method** on non-excluded code.
+
+- The metric collections (`insights_openings/endgames/positions/tricky/summary`) are written
+  **only** by the Scala Spark connector, so the repository decodes **camelCase** fields
+  (`corpusId`, `openingName`, `whiteWinRate`, `normalizedFen`, `avgCentipawnLoss`, …) — unlike
+  the snake_case catalog the control plane owns. Mongo `List` is unordered, so the pure query
+  service re-sorts to the contract order (openings→gameCount, endgames→frequency,
+  positions→reachCount, tricky→avgCentipawnLoss then avgThinkTimeMs) and pages.
+- **L1 Redis** is a rebuildable string cache keyed by corpus + filters (not paging); the full
+  sorted list is cached and paged after retrieval. New config: `ConnectionStrings:Redis`.
+
+### Known gaps (task-04 follow-ups, not contract changes)
+
+1. **Opening split/trend rows.** Task-04 `OpeningStat` emits no `color`/`rating_band`/
+   `time_control` split rows and no `trend` points. `GetTopOpenings` honors the split filters
+   and the `trend` shape per contract, but split filters return empty and `trend` is always
+   `[]` until task 04 emits split/trend rows.
+2. **`exclude_book` is unenforceable at query time.** `insights_positions` (task 04) carries
+   no ply, so the book cut-off is a job-time `bookPlies` concern. `GetCommonPositions` accepts
+   the flag and varies the cache key on it, but it does not change the result set. Honoring it
+   would need task 04 to carry a min-ply (or write a separate book-excluded collection).

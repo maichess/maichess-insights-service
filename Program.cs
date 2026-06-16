@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Minio;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using StackExchange.Redis;
 
 DotNetEnv.Env.Load();
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,8 @@ string insightsDbUrl = builder.Configuration["Services:InsightsDatabase"]
     ?? throw new InvalidOperationException("Services:InsightsDatabase is not configured");
 string jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key is not configured");
+string redisUrl = builder.Configuration.GetConnectionString("Redis")
+    ?? throw new InvalidOperationException("ConnectionStrings:Redis is not configured");
 
 InsightsOptions insightsOptions = builder.Configuration.GetSection("Insights").Get<InsightsOptions>() ?? new InsightsOptions();
 builder.Services.AddSingleton(insightsOptions);
@@ -82,6 +85,16 @@ builder.Services.AddSingleton(sp => new JobService(
     sp.GetRequiredService<InsightsOptions>(),
     idGen,
     clock));
+
+// Query API: read insights_* via database-service, fronted by a rebuildable Redis L1.
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisUrl));
+builder.Services.AddSingleton<IInsightsCache, RedisInsightsCache>();
+builder.Services.AddSingleton<IInsightsRepository>(sp =>
+    new InsightsRepository(sp.GetRequiredService<Database.DatabaseClient>()));
+builder.Services.AddSingleton(sp => new InsightsQueryService(
+    sp.GetRequiredService<IInsightsRepository>(),
+    sp.GetRequiredService<IInsightsCache>(),
+    sp.GetRequiredService<IInsightsStore>()));
 
 // Tracks SparkApplication status transitions back into insights_jobs.
 builder.Services.AddHostedService(sp => new SparkStatusReconciler(

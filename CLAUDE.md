@@ -6,7 +6,9 @@ custom resources, and surfaces the job/corpus catalog over REST + gRPC. It never
 Spark/Parquet/MinIO data itself — the Scala `maichess-insights-spark` module does the
 heavy lifting and writes the materialized `insights_*` collections; this service reads the
 catalog via database-service gRPC. The metric **query** API (openings/endgames/positions/
-tricky/summary) is task 06; the query RPCs stay `Unimplemented` until then.
+tricky/summary, task 06) is implemented: `InsightsQueryService` reads the `insights_*` metric
+collections via `IInsightsRepository` (camelCase docs written by Spark) behind a rebuildable
+Redis L1 (`IInsightsCache`), served over the corpus-scoped REST routes + the query gRPC RPCs.
 
 ## Contracts
 
