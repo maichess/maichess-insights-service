@@ -3,7 +3,7 @@
 ## Pending: `Maichess.PlatformProtos` v0.14.0 publish (task 01)
 
 The insights contract was authored in `maichess-api-contracts` (task
-`planned/insights/01-contracts-and-insights-db.md`):
+`implemented/insights/01-contracts-and-insights-db.md`):
 
 - `protos/insights-service/v1/insights.proto` — the `Insights` service (job control
   + query RPCs) and all metric/row messages.

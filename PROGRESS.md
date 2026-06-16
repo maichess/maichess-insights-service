@@ -1,7 +1,7 @@
 # Insights program — progress log (for handoff)
 
 > Running log so a later session can pick up. Newest section at the bottom. The task
-> program is `maichess-knowledge-base/tasks/planned/insights/` (`01`–`07`).
+> program is `maichess-knowledge-base/tasks/implemented/insights/` (`01`–`07`).
 
 ## State as of this session
 
@@ -76,7 +76,7 @@ positions `exclude_book`).
 ## Task 07 — client Insights page (NOT started)
 
 Touches **`maichess-client`** (separate repo, not this one). Read
-`tasks/planned/insights/07-client-insights-page.md` and the client's existing pages/conventions.
+`tasks/implemented/insights/07-client-insights-page.md` and the client's existing pages/conventions.
 Consumes task-06's REST surface (`/insights/corpora/{id}/{summary,openings,endgames,positions,
 tricky}` + `/insights/jobs`, `/insights/corpora`, submit/upload). Build opening explorer,
 endgames, common/tricky positions, and a job submit + status view. Work on a `dev` branch there
