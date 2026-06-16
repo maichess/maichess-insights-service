@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using k8s;
 using k8s.Autorest;
 using MaichessInsightsService.Domain;
@@ -39,9 +40,13 @@ internal sealed class SparkJobLauncher(IKubernetes kube, InsightsOptions options
 
     private Dictionary<string, object> BuildManifest(SparkSpec spec)
     {
+        // coreLimit sets the pods' cpu *limit* (spark.kubernetes.{driver,executor}.limit.cores).
+        // Required: the insights-spark-quota ResourceQuota hard-caps limits.cpu, so a pod
+        // without a cpu limit is rejected ("must specify limits.cpu"). Limit == request (cores).
         Dictionary<string, object> driver = new()
         {
             ["cores"] = options.DriverCores,
+            ["coreLimit"] = options.DriverCores.ToString(CultureInfo.InvariantCulture),
             ["memory"] = options.DriverMemory,
             ["serviceAccount"] = options.ServiceAccount,
             ["labels"] = new Dictionary<string, string> { ["maichess/insights-job"] = spec.ApplicationName },
@@ -50,6 +55,7 @@ internal sealed class SparkJobLauncher(IKubernetes kube, InsightsOptions options
         {
             ["instances"] = options.ExecutorInstances,
             ["cores"] = options.ExecutorCores,
+            ["coreLimit"] = options.ExecutorCores.ToString(CultureInfo.InvariantCulture),
             ["memory"] = options.ExecutorMemory,
             ["labels"] = new Dictionary<string, string> { ["maichess/insights-job"] = spec.ApplicationName },
         };
