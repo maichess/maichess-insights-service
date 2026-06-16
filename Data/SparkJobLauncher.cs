@@ -78,7 +78,7 @@ internal sealed class SparkJobLauncher(IKubernetes kube, InsightsOptions options
             ["type"] = "Scala",
             ["mode"] = "cluster",
             ["image"] = options.Image,
-            ["imagePullPolicy"] = "IfNotPresent",
+            ["imagePullPolicy"] = options.ImagePullPolicy,
             ["mainClass"] = spec.MainClass,
             ["mainApplicationFile"] = options.JarPath,
             ["sparkVersion"] = options.SparkVersion,
