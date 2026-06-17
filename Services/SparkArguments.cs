@@ -51,6 +51,11 @@ internal static class SparkArguments
         args.AddRange(["--replay", options.ReplayBoard ? "true" : "false"]);
         args.AddRange(["--raw-bucket", options.RawBucket]);
         args.AddRange(["--parsed-bucket", options.ParsedBucket]);
+
+        // The job writes the parsed game count back to the catalog (insights_corpora,
+        // created with GameCount 0 on submit), so it needs the catalog Mongo connection.
+        args.AddRange(["--mongo-uri", options.MongoUri]);
+        args.AddRange(["--mongo-db", options.MongoDb]);
         return args;
     }
 

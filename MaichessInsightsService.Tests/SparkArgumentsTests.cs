@@ -32,6 +32,8 @@ public class SparkArgumentsTests
                 "--replay", "true",
                 "--raw-bucket", "insights-raw",
                 "--parsed-bucket", "insights-parsed",
+                "--mongo-uri", "mongodb://m",
+                "--mongo-db", "maichess",
             ],
             args);
     }
